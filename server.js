@@ -175,9 +175,33 @@ app.put('/api/addFriend', function (req, res) {
 		})
 })
 
-app.get('/api/getFriendsFriends/:id/:myId', function (req, res) {
-	var myId = req.params.myId;
-	User.findById(req.params.id)
+// TODO may need to be a .post rather than .get
+// app.get('/api/getFriendsFriends/:id/:myId', function (req, res) {
+// 	var myId = req.params.myId;
+// 	User.findById(req.params.id)
+// 		.populate('friends', 'name')
+// 		.exec(function (err, results) {
+// 			if (err) {
+// 				console.log(err)
+// 				return res.json({ success: false, message: 'Could not find friend\'s friends' });
+// 			} else {
+// 				var friends = _.map(results.friends, function (item) {
+// 					item.id = item._id
+// 					return item;
+// 				})
+// 				var secondConnections = _.filter(friends, function (i) { return i.id !== myId })
+// 				return res.json({ success: true, friends: secondConnections })
+// 			}
+// 		})
+// })
+
+.post('/api/getFriendsFriends', function (req, res) {
+	var myId = req.body.myId;
+	var friendId = req.body.friendId;
+	if (!friendId) {
+		res.json({success: false, message: 'Requires friendId'})
+	}
+	User.findById(friendId)
 		.populate('friends', 'name')
 		.exec(function (err, results) {
 			if (err) {
@@ -188,7 +212,7 @@ app.get('/api/getFriendsFriends/:id/:myId', function (req, res) {
 					item.id = item._id
 					return item;
 				})
-				var secondConnections = _.filter(friends, function (i) { return i.id !== myId })
+				var secondConnections = myId ? _.filter(friends, function (i) { return i.id !== myId }) : friends
 				return res.json({ success: true, friends: secondConnections })
 			}
 		})
@@ -205,7 +229,7 @@ app.put('/api/deleteFriend', function (req, res) {
 			console.log(err)
 			return res.json({ success: false, message: 'Could not find user' });
 		} else {
-			friends = results.friends;
+			var friends = results.friends;
 			if (friends.indexOf(deleteId) !== -1) {
 				friends.splice(friends.indexOf(deleteId), 1);
 				results.save(function (err, updatedProfile) {
@@ -233,18 +257,14 @@ app.put('/api/deleteFriend', function (req, res) {
 	})
 })
 
-app.get('/api/test/:id', function (req, res) {
-	var removeId = req.params.id;
-	User
-        .find({ 'friends': { $in: [req.params.id] } })
-        .exec(function (err, results) {
-			_.each(results, function (item) {
-				item.friends.splice(item.friends.indexOf(removeId), 1);
-				item.save();
-			})
-        })
+app.get('/api/allUsers', function(req, res) {
+	User.find().exec(function (err, users) {
+		if (err) {
+			res.status(500).json({ success: false, message: err })
+		}
+		res.status(200).json({success: true, users: users})
+	})
 })
-
 
 
 var mongodbUri = 'mongodb://localhost/projectwk2friends';
@@ -258,15 +278,3 @@ mongoose.connection.once('open', function () {
 app.listen(port, function () {
 	console.log('Listening on port: ' + port)
 })
-
-
-/*
-first
-	no user info
-	save
-	user saved: name, likes, color -> also gets _id
-	user is now db doc
-	user changed info -> has _id -> lookup, update with new fields' info
-	name could change, so only can use name for first save, not update
-		if name exists, grab user rather than saving new (on first attempt)
-*/

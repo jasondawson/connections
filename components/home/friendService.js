@@ -9,7 +9,11 @@ app.service('friendService', function ($http, $q) {
 
 		function getNextFriend() {
 			if (friends[index]) {
-				$http.get('http://localhost:8081/api/getFriendsFriends/' + friends[index]._id + '/' + profile._id)
+				$http.post('http://localhost:8081/api/getFriendsFriends',
+					{
+						friendId: friends[index]._id,
+						// myId: profile._id
+					})
 					.then(function (friendResponse) {
 						if (friendResponse.data.success) {
 							friends[index].friends = friendResponse.data.friends
