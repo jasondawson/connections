@@ -12,7 +12,7 @@ app.service('friendService', function ($http, $q) {
 				$http.post('http://localhost:8081/api/getFriendsFriends',
 					{
 						friendId: friends[index]._id,
-						// myId: profile._id
+						myId: profile._id
 					})
 					.then(function (friendResponse) {
 						if (friendResponse.data.success) {

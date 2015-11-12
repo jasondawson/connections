@@ -175,25 +175,6 @@ app.put('/api/addFriend', function (req, res) {
 		})
 })
 
-// TODO may need to be a .post rather than .get
-// app.get('/api/getFriendsFriends/:id/:myId', function (req, res) {
-// 	var myId = req.params.myId;
-// 	User.findById(req.params.id)
-// 		.populate('friends', 'name')
-// 		.exec(function (err, results) {
-// 			if (err) {
-// 				console.log(err)
-// 				return res.json({ success: false, message: 'Could not find friend\'s friends' });
-// 			} else {
-// 				var friends = _.map(results.friends, function (item) {
-// 					item.id = item._id
-// 					return item;
-// 				})
-// 				var secondConnections = _.filter(friends, function (i) { return i.id !== myId })
-// 				return res.json({ success: true, friends: secondConnections })
-// 			}
-// 		})
-// })
 
 .post('/api/getFriendsFriends', function (req, res) {
 	var myId = req.body.myId;

@@ -79,11 +79,6 @@ returns: users (array of all users)
 
 ---
 
-Random notes from Jeremy
-
-change endpoint to findFriendsFriends so that myId is optional
-
-add endpoint to search all users (for `login`)
 
 
 Black Diamond
